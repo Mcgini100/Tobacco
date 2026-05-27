@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chigwarada-v1';
+const CACHE_NAME = 'chigwarada-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/static/index.html',
