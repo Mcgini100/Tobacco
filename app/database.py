@@ -13,7 +13,7 @@ SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-fallback-secret-key-for-dev")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 7 days
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
