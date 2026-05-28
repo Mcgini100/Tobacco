@@ -2,12 +2,12 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="ChiGwarada — AI-powered tobacco leaf disease detection. Upload an image or describe symptoms to diagnose plant diseases instantly. Kuongorora chirwere cheMashizha eFodya." />
-  <meta name="theme-color" content="#0a0f0d" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="AgriVision — AI-powered tobacco leaf disease detection and farming guide. Kuongorora chirwere cheMashizha eFodya." />
+  <meta name="theme-color" content="#f0fdf4" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>ChiGwarada — Tobacco Leaf Disease Detection | Kuongorora Chirwere cheMashizha eFodya</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>AgriVision — Tobacco Leaf Disease Detection | Kuongorora Chirwere</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,10 +22,23 @@
 </head>
 <body>
 
-  <!-- ═══════════════════════════ AUTH MODAL ═══════════════════════════ -->
+  <!-- Global Voice Button -->
+  <button id="btn-global-voice" class="global-voice-btn" aria-label="Voice input" title="Describe what you see">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+      <line x1="12" y1="19" x2="12" y2="22"></line>
+    </svg>
+  </button>
+  <div id="global-voice-indicator" class="voice-indicator hidden" style="position: fixed; bottom: 80px; right: 20px; z-index: 1000; background: white; border-radius: 8px; box-shadow: var(--shadow-sm); border: 1px solid var(--accent-border);">
+    <span class="pulse-dot"></span>
+    <span id="global-voice-status" data-i18n="listening">Listening...</span>
+  </div>
+
+  <!-- AUTH MODAL -->
   <div id="auth-modal" class="auth-modal">
     <div class="auth-content">
-      <h2>Welcome to ChiGwarada</h2>
+      <h2>Welcome to AgriVision</h2>
       <p>Please login or register to continue.</p>
       <div id="auth-error" class="error-message hidden" style="position:relative; margin-bottom:10px;"></div>
       <form id="auth-form" onsubmit="event.preventDefault();">
@@ -39,184 +52,361 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+  <!-- HEADER -->
   <header id="app-header">
     <div class="header-inner">
-      <div class="brand">
-        <h1 id="app-title" class="brand-title">ChiGwarada <span class="leaf-icon">🍃</span></h1>
-        <p id="app-tagline" class="brand-tagline" data-i18n="tagline">
-          AI-Powered Tobacco Leaf Disease Detection
-        </p>
-      </div>
-      <div class="header-controls">
-        <div id="lang-toggle" class="lang-toggle" role="radiogroup" aria-label="Language selector">
+      <div class="header-top-bar" style="justify-content: space-between;">
+        <div class="brand" style="position: static; transform: none;">
+          <h1 id="app-title" class="brand-title">AgriVision <span class="leaf-icon">🍃</span></h1>
+        </div>
+        <div id="lang-toggle" class="lang-toggle" role="radiogroup" aria-label="Language selector" style="margin-left: auto;">
           <button id="btn-lang-en" class="lang-btn active" data-lang="en" aria-pressed="true" title="English">EN</button>
           <button id="btn-lang-sn" class="lang-btn" data-lang="sn" aria-pressed="false" title="Shona">SN</button>
         </div>
       </div>
     </div>
-    <!-- Decorative gradient line -->
-    <div class="header-gradient-line" aria-hidden="true"></div>
   </header>
 
-  <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+  <!-- MAIN -->
   <main id="app-main">
-    <div class="container">
-
-      <!-- ─── Mode Tabs ─── -->
-      <nav id="mode-tabs" class="mode-tabs" role="tablist" aria-label="Input mode">
-        <button id="tab-upload" class="tab-btn active" role="tab" aria-selected="true" aria-controls="panel-upload" data-i18n="tabUpload">
-          Upload Image
-        </button>
-        <button id="tab-describe" class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-describe" data-i18n="tabDescribe">
-          Describe Symptoms
-        </button>
-      </nav>
-
-      <!-- ─── Upload Panel ─── -->
-      <section id="panel-upload" class="panel active" role="tabpanel" aria-labelledby="tab-upload">
-        <div id="drop-zone" class="drop-zone" role="button" tabindex="0" aria-label="Drag and drop image or click to browse">
-          <div class="drop-zone-content">
-            <div class="drop-icon" aria-hidden="true">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
+    
+    <!-- ── PAGE: HOME ── -->
+    <section id="page-home" class="page-section active">
+      <div class="container home-container">
+        <div class="hero-card">
+          <h2 data-i18n="homeWelcome">Welcome to AgriVision</h2>
+          <p data-i18n="homeSubtitle">Your Smart Tobacco Farming Assistant.</p>
+        </div>
+        <div class="home-grid">
+          <div class="home-card" data-target="page-diagnose">
+            <div class="home-card-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+                <circle cx="12" cy="13" r="3"></circle>
               </svg>
             </div>
-            <p id="drop-text" class="drop-text" data-i18n="dropText">
-              Drag &amp; drop an image here, or click to browse
-            </p>
-            <p class="drop-hint" data-i18n="dropHint">Supports JPG, PNG, WEBP — Max 10 MB</p>
+            <h3 data-i18n="navDiagnose">Diagnose</h3>
+            <p data-i18n="homeDiagnoseDesc">Scan leaves to detect diseases.</p>
           </div>
-          <!-- Hidden file inputs -->
-          <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/jpg" hidden />
-          <input type="file" id="camera-input" accept="image/*" capture="environment" hidden />
-        </div>
-
-        <!-- Camera button (primarily for mobile) -->
-        <button id="btn-camera" class="btn btn-secondary btn-camera" data-i18n="btnCamera">
-          Take Photo
-        </button>
-
-        <!-- Image Preview -->
-        <div id="preview-container" class="preview-container hidden">
-          <div class="preview-wrapper">
-            <img id="image-preview" class="image-preview" alt="Uploaded leaf preview" />
-            <button id="btn-remove-image" class="btn-remove" aria-label="Remove image" title="Remove image">&times;</button>
+          <div class="home-card" data-target="page-guide">
+            <div class="home-card-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+            </div>
+            <h3 data-i18n="navGuide">Guide</h3>
+            <p data-i18n="homeGuideDesc">Learn about tobacco diseases.</p>
           </div>
-          <p id="file-name" class="file-name"></p>
-        </div>
-      </section>
-
-      <!-- ─── Describe Panel ─── -->
-      <section id="panel-describe" class="panel" role="tabpanel" aria-labelledby="tab-describe" hidden>
-        <div class="textarea-wrapper">
-          <textarea
-            id="symptom-text"
-            class="symptom-textarea"
-            maxlength="500"
-            rows="5"
-            data-i18n-placeholder="textareaPlaceholder"
-            placeholder="Describe the symptoms you see on the tobacco leaf... e.g., brown spots, curling edges, yellowing..."
-          ></textarea>
-          <div class="textarea-footer">
-            <button id="btn-voice" class="btn btn-icon btn-voice" aria-label="Voice input" title="Voice input">
-              <span class="voice-icon">🎤</span>
-              <span id="voice-label" class="voice-label" data-i18n="voiceLabel">Voice</span>
-            </button>
-            <span id="char-counter" class="char-counter">0 / 500</span>
+          <div class="home-card" data-target="page-market">
+            <div class="home-card-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="2" x2="12" y2="22"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+            </div>
+            <h3 data-i18n="navMarket">Market & Weather</h3>
+            <p data-i18n="homeMarketDesc">Get updates on weather and prices.</p>
           </div>
         </div>
-        <!-- Voice listening indicator -->
-        <div id="voice-indicator" class="voice-indicator hidden">
-          <span class="pulse-dot"></span>
-          <span id="voice-status" data-i18n="listening">Listening...</span>
-        </div>
-      </section>
-
-      <!-- ─── Submit Button ─── -->
-      <div class="submit-section">
-        <button id="btn-submit" class="btn btn-primary btn-submit" disabled>
-          <span id="submit-text" data-i18n="btnSubmit">Diagnose</span>
-          <div id="submit-spinner" class="spinner hidden" aria-hidden="true"></div>
-        </button>
-        <p id="rate-info" class="rate-info hidden"></p>
       </div>
+    </section>
 
-      <!-- ─── Error Message ─── -->
-      <div id="error-message" class="error-message hidden" role="alert"></div>
+    <!-- ── PAGE: DIAGNOSE ── -->
+    <section id="page-diagnose" class="page-section hidden">
+      <div class="container">
+        <!-- Mode Tabs -->
+        <nav id="mode-tabs" class="mode-tabs" role="tablist" aria-label="Input mode">
+          <button id="tab-upload" class="tab-btn active" role="tab" aria-selected="true" aria-controls="panel-upload" data-i18n="tabUpload">
+            Upload Image
+          </button>
+          <button id="tab-describe" class="tab-btn" role="tab" aria-selected="false" aria-controls="panel-describe" data-i18n="tabDescribe">
+            Describe Symptoms
+          </button>
+        </nav>
 
-      <!-- ─── Loading Skeleton ─── -->
-      <div id="loading-skeleton" class="loading-skeleton hidden" aria-label="Loading results">
-        <div class="skeleton-header shimmer"></div>
-        <div class="skeleton-bar shimmer"></div>
-        <div class="skeleton-text shimmer"></div>
-        <div class="skeleton-text short shimmer"></div>
-        <div class="skeleton-list shimmer"></div>
+        <!-- Upload Panel -->
+        <section id="panel-upload" class="panel active" role="tabpanel" aria-labelledby="tab-upload">
+          <div id="drop-zone" class="drop-zone" role="button" tabindex="0">
+            <div class="drop-zone-content">
+              <div class="drop-icon">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </div>
+              <p id="drop-text" class="drop-text" data-i18n="dropText">Drag &amp; drop an image here</p>
+              <p class="drop-hint" data-i18n="dropHint">Supports JPG, PNG, WEBP — Max 10 MB</p>
+            </div>
+            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/jpg" hidden />
+            <input type="file" id="camera-input" accept="image/*" capture="environment" hidden />
+          </div>
+          <button id="btn-camera" class="btn btn-secondary btn-camera" data-i18n="btnCamera">Take Photo</button>
+          
+          <div id="preview-container" class="preview-container hidden">
+            <div class="preview-wrapper">
+              <img id="image-preview" class="image-preview" alt="Uploaded leaf preview" />
+              <button id="btn-remove-image" class="btn-remove" aria-label="Remove image">&times;</button>
+            </div>
+            <p id="file-name" class="file-name"></p>
+          </div>
+        </section>
+
+        <!-- Describe Panel -->
+        <section id="panel-describe" class="panel" role="tabpanel" aria-labelledby="tab-describe" hidden>
+          <div class="textarea-wrapper">
+            <textarea
+              id="symptom-text"
+              class="symptom-textarea"
+              maxlength="500"
+              rows="5"
+              data-i18n-placeholder="textareaPlaceholder"
+              placeholder="Describe symptoms..."
+            ></textarea>
+            <div class="textarea-footer">
+              <button id="btn-voice" class="btn btn-icon btn-voice" aria-label="Voice input" title="Voice input">
+                <span class="voice-icon">🎤</span>
+                <span id="voice-label" class="voice-label" data-i18n="voiceLabel">Voice</span>
+              </button>
+              <span id="char-counter" class="char-counter">0 / 500</span>
+            </div>
+          </div>
+          <!-- Voice listening indicator -->
+          <div id="voice-indicator" class="voice-indicator hidden">
+            <span class="pulse-dot"></span>
+            <span id="voice-status" data-i18n="listening">Listening...</span>
+          </div>
+        </section>
+
+        <!-- Submit Button -->
+        <div class="submit-section">
+          <button id="btn-submit" class="btn btn-primary btn-submit" disabled>
+            <span id="submit-text" data-i18n="btnSubmit">Diagnose</span>
+            <div id="submit-spinner" class="spinner hidden"></div>
+          </button>
+          <p id="rate-info" class="rate-info hidden"></p>
+        </div>
+
+        <div id="error-message" class="error-message hidden" role="alert"></div>
+
+        <!-- Loading Skeleton -->
+        <div id="loading-skeleton" class="loading-skeleton hidden">
+          <div class="skeleton-header shimmer"></div>
+          <div class="skeleton-bar shimmer"></div>
+          <div class="skeleton-text shimmer"></div>
+          <div class="skeleton-text short shimmer"></div>
+          <div class="skeleton-list shimmer"></div>
+        </div>
+
+        <!-- Results Section -->
+        <section id="results-section" class="results-section hidden" aria-live="polite">
+          <div id="results-card" class="results-card">
+            <div class="results-header">
+              <div class="results-icon-wrapper">
+                <span id="results-icon" class="results-emoji">🔬</span>
+              </div>
+              <div>
+                <h2 id="results-title" class="results-title" data-i18n="diseaseDetected">Disease Detected</h2>
+                <p id="disease-name" class="disease-name"></p>
+              </div>
+              <div class="severity-box" style="display:flex; flex-direction:column; align-items:flex-end; gap: 8px;">
+                <span id="severity-badge" class="severity-badge"></span>
+                <button id="btn-tts" class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" title="Read Aloud">🔊 Play Audio</button>
+              </div>
+            </div>
+
+            <!-- Confidence Bar -->
+            <div class="confidence-section">
+              <div class="confidence-label-row">
+                <span id="confidence-label" data-i18n="confidence">Confidence</span>
+                <span id="confidence-value" class="confidence-value">0%</span>
+              </div>
+              <div class="confidence-track">
+                <div id="confidence-bar" class="confidence-fill" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Descriptions -->
+            <div class="description-section">
+              <div class="desc-block">
+                <h3 class="desc-heading">🇬🇧 English</h3>
+                <p id="desc-en" class="desc-text"></p>
+              </div>
+              <div class="desc-block">
+                <h3 class="desc-heading">🇿🇼 Shona</h3>
+                <p id="desc-sn" class="desc-text"></p>
+              </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="recommendations-section">
+              <h3 id="rec-title" class="rec-heading" data-i18n="recommendations">Recommendations</h3>
+              <ul id="rec-list-en" class="rec-list"></ul>
+              <h3 class="rec-heading rec-heading-sn">Mazano (Shona)</h3>
+              <ul id="rec-list-sn" class="rec-list"></ul>
+            </div>
+          </div>
+        </section>
+
       </div>
+    </section>
 
-      <!-- ─── Results Section ─── -->
-      <section id="results-section" class="results-section hidden" aria-live="polite">
-        <div id="results-card" class="results-card">
-          <div class="results-header">
-            <div class="results-icon-wrapper">
-              <span id="results-icon" class="results-emoji" aria-hidden="true">🔬</span>
-            </div>
-            <div>
-              <h2 id="results-title" class="results-title" data-i18n="diseaseDetected">Disease Detected</h2>
-              <p id="disease-name" class="disease-name"></p>
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:flex-end; gap: 8px;">
-              <span id="severity-badge" class="severity-badge"></span>
-              <button id="btn-tts" class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" aria-label="Read Aloud" title="Read Aloud">🔊 Play Audio</button>
+    <!-- ── PAGE: GUIDE ── -->
+    <section id="page-guide" class="page-section hidden">
+      <div class="container">
+        <div class="page-header">
+          <h2 class="page-title" data-i18n="guideTitle">Tobacco Disease Guide</h2>
+          <p class="page-subtitle" data-i18n="guideSubtitle">Common diseases affecting tobacco crops, identification, and prevention strategies.</p>
+        </div>
+        
+        <div class="guide-content">
+          <!-- Guide items will be injected by app.js or rendered here statically -->
+          <div class="guide-card">
+            <div class="guide-image" style="background-image: url('/static/guide_images/alternaria_alternata.jpg');"></div>
+            <h3>Alternaria Alternata (Brown Spot)</h3>
+            <p>Brown spot appears as circular spots on the lower leaves, gradually moving upwards. It is favored by warm, humid conditions and can cause significant yield loss if not managed.</p>
+            <div class="guide-tips">
+              <h4>Management</h4>
+              <ul>
+                <li>Early reaping to remove infected lower leaves.</li>
+                <li>Proper curing and avoiding excessive nitrogen fertilizer.</li>
+                <li>Apply registered fungicides when symptoms first appear.</li>
+              </ul>
             </div>
           </div>
 
-          <!-- Confidence Bar -->
-          <div class="confidence-section">
-            <div class="confidence-label-row">
-              <span id="confidence-label" data-i18n="confidence">Confidence</span>
-              <span id="confidence-value" class="confidence-value">0%</span>
-            </div>
-            <div class="confidence-track">
-              <div id="confidence-bar" class="confidence-fill" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <!-- Descriptions -->
-          <div class="description-section">
-            <div class="desc-block">
-              <h3 class="desc-heading">🇬🇧 English</h3>
-              <p id="desc-en" class="desc-text"></p>
-            </div>
-            <div class="desc-block">
-              <h3 class="desc-heading">🇿🇼 Shona</h3>
-              <p id="desc-sn" class="desc-text"></p>
+          <div class="guide-card">
+            <div class="guide-image" style="background-image: url('/static/guide_images/cercospora_nicotianae.jpg');"></div>
+            <h3>Cercospora Nicotianae (Frog Eye Spot)</h3>
+            <p>Characterized by small, circular spots with white or light tan centers resembling frog eyes. It commonly occurs in wet weather and can lower leaf quality.</p>
+            <div class="guide-tips">
+              <h4>Management</h4>
+              <ul>
+                <li>Maintain strict seedbed hygiene.</li>
+                <li>Destroy crop residues after harvest.</li>
+                <li>Ensure proper plant spacing for air circulation.</li>
+              </ul>
             </div>
           </div>
 
-          <!-- Recommendations -->
-          <div class="recommendations-section">
-            <h3 id="rec-title" class="rec-heading" data-i18n="recommendations">Recommendations</h3>
-            <ul id="rec-list-en" class="rec-list"></ul>
-            <h3 class="rec-heading rec-heading-sn"> Mazano (Shona)</h3>
-            <ul id="rec-list-sn" class="rec-list"></ul>
+          <div class="guide-card">
+            <div class="guide-image" style="background-image: url('/static/guide_images/TMV.jpg');"></div>
+            <h3>Tobacco Mosaic Virus (TMV)</h3>
+            <p>Causes mottling and discoloration of leaves (a mosaic pattern). It is highly contagious and usually spread through mechanical transmission (hands, tools).</p>
+            <div class="guide-tips">
+              <h4>Management</h4>
+              <ul>
+                <li>Wash hands thoroughly with soap and water before handling plants.</li>
+                <li>Do not smoke or use tobacco products while in the field.</li>
+                <li>Use TMV-resistant tobacco varieties if available.</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="guide-card">
+            <div class="guide-image" style="background-image: url('/static/guide_images/Angular_leaf_spot.jpg');"></div>
+            <h3>Angular Leaf Spot (Pseudomonas syringae)</h3>
+            <p>A bacterial disease causing dark, angular spots on leaves, often surrounded by a yellow halo. Spread is favored by driving rain and wind.</p>
+            <div class="guide-tips">
+              <h4>Management</h4>
+              <ul>
+                <li>Avoid working in the field when plants are wet.</li>
+                <li>Rotate crops and bury or burn infected stalks.</li>
+                <li>Apply copper-based bactericides preventatively in high-risk areas.</li>
+              </ul>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-    </div>
+    <!-- ── PAGE: MARKET & WEATHER ── -->
+    <section id="page-market" class="page-section hidden">
+      <div class="container">
+        <div class="page-header">
+          <h2 class="page-title" data-i18n="weatherTitle">Market & Weather Updates</h2>
+        </div>
+        
+        <div class="weather-widget glass-card">
+          <div class="widget-header">
+            <h3>Local Weather <span class="loc-pin">📍 Harare (Default)</span></h3>
+          </div>
+          <div id="weather-loading" class="shimmer" style="height: 80px; border-radius: 8px; margin-top: 10px;"></div>
+          <div id="weather-content" class="hidden weather-flex">
+            <div class="weather-temp" id="weather-temp">--°C</div>
+            <div class="weather-details">
+              <p id="weather-desc">Fetching weather...</p>
+              <p class="weather-extra">Humidity: <span id="weather-humidity">--%</span> | Wind: <span id="weather-wind">-- km/h</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="market-widget glass-card mt-lg">
+          <div class="widget-header">
+            <h3>Tobacco Market Prices (Simulated)</h3>
+          </div>
+          <ul class="market-list">
+            <li>
+              <div class="market-info">
+                <span class="market-grade">Grade A (Premium Flue-Cured)</span>
+                <span class="market-trend up">High Demand</span>
+              </div>
+              <span class="market-price">$4.80 / kg</span>
+            </li>
+            <li>
+              <div class="market-info">
+                <span class="market-grade">Grade B (Standard)</span>
+                <span class="market-trend up">Stable</span>
+              </div>
+              <span class="market-price">$3.50 / kg</span>
+            </li>
+            <li>
+              <div class="market-info">
+                <span class="market-grade">Grade C (Lower Quality)</span>
+                <span class="market-trend down">Oversupply</span>
+              </div>
+              <span class="market-price">$2.10 / kg</span>
+            </li>
+          </ul>
+          <p class="market-date">Last updated: <span id="market-date-val">Today</span></p>
+        </div>
+      </div>
+    </section>
+
   </main>
 
-  <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
-  <footer id="app-footer">
-    <div class="footer-inner">
-      <p class="footer-sub">
-        <span data-i18n="footerUni">University Final Year Project</span> &bull; &copy; 2026
-      </p>
-    </div>
-  </footer>
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-target="page-home">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+      <span class="nav-text" data-i18n="navHome">Home</span>
+    </button>
+    <button class="nav-btn" data-target="page-diagnose">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+        <circle cx="12" cy="13" r="3"></circle>
+      </svg>
+      <span class="nav-text" data-i18n="navDiagnose">Diagnose</span>
+    </button>
+    <button class="nav-btn" data-target="page-guide">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+      </svg>
+      <span class="nav-text" data-i18n="navGuide">Guide</span>
+    </button>
+    <button class="nav-btn" data-target="page-market">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="2" x2="12" y2="22"></line>
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+      </svg>
+      <span class="nav-text" data-i18n="navMarket">Market</span>
+    </button>
+  </nav>
 
   <!-- JavaScript -->
   <script src="/static/app.js"></script>
