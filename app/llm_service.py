@@ -9,6 +9,7 @@ Two public functions:
 
 from __future__ import annotations
 
+import base64
 import json
 import logging
 import os
@@ -47,7 +48,12 @@ farming recommendations in both English and Shona.
 |------------------------|-----------------------------------------------|
 | Alternaria Alternata   | Chirwere cheAlternaria (Brown Spot / Madoadoa aBrown) |
 | Cercospora Nicotianae  | Chirwere cheCercospora (Frog Eye Spot / Madoadoa eDatya) |
-| Healthy                | Yakagwinya (Mashizha akanaka)                 |
+| Tobacco Mosaic Virus   | Chirwere cheMosaic (TMV)                      |
+| Angular Leaf Spot                      | Madoadoa eAngular                                        |
+| Blue Spot Fungus                       | Fangasi rinokonzera mavara ebhuruu kana grey pamashizha  |
+| Hornworms / Loopworms Tobacco Damage   | Kukuvadzwa kwefodya nemakonye anodya mashizha            |
+| Bacterial Leaf Drop                    | Kudonha kwemashizha kunokonzerwa nebhakitiriya           |
+| Healthy                                | Yakagwinya (Mashizha akanaka)                            |
 
 ## Shona Language Examples
 
@@ -57,6 +63,13 @@ farming recommendations in both English and Shona.
   (Apply fungicide as prescribed.)
 - "Mashizha akanaka, enderai kuchengetedza zvakanaka."
   (Leaves are healthy, continue with good practices.)
+
+## Vague Symptoms / Safety
+
+If the provided symptoms are not enough for a diagnosis (e.g. "my tobacco is sick", "leaves are not looking good", "chii chingaita kuti fodya isakure zvakanaka"):
+- Do not guess or assume a disease.
+- Respond safely by asking the farmer clarifying questions (e.g., "Are there spots? Are leaves falling? Are there insects?").
+- Recommend sending a photo or consulting an expert if the problem worsens quickly.
 
 ## Response Format
 
@@ -149,12 +162,84 @@ async def get_diagnosis_from_description(
         f'"{user_text}"\n\n'
         f"{lang_instruction}\n"
         "Based on these symptoms, identify the most likely disease from the "
-        "reference table (Alternaria Alternata, Cercospora Nicotianae, or "
-        "Healthy) and provide your diagnosis with practical recommendations."
+        "reference table (Alternaria Alternata, Cercospora Nicotianae, TMV, Angular Leaf Spot, "
+        "Blue Spot Fungus, Hornworms / Loopworms Tobacco Damage, Bacterial Leaf Drop, or Healthy) "
+        "and provide your diagnosis with practical recommendations.\n"
+        "If the symptoms described are completely unrelated to plants, agriculture, or tobacco, "
+        "or if it is gibberish, output 'Unknown' for the disease name and ask the user to describe actual symptoms."
     )
 
     return await _call_llm(user_prompt)
 
+
+async def check_for_new_diseases_vision(image_bytes: bytes, yolo_prediction: str) -> str | None:
+    """
+    Check if the image contains TMV or Angular Leaf Spot using GPT-4o-mini vision.
+    Uses Chain-of-Thought reasoning to prevent false positives on Alternaria and Cercospora.
+    Returns the class name if detected, else None.
+    """
+    client = _get_client()
+    base64_image = base64.b64encode(image_bytes).decode('utf-8')
+    
+    prompt = (
+        "You are an expert tobacco plant pathologist. An initial classifier predicted this leaf as: "
+        f"'{yolo_prediction}'.\n\n"
+        "Your task is to double-check if this image ACTUALLY shows clear signs of:\n"
+        "1. 'Tobacco Mosaic Virus' (TMV): light/dark green mosaic patterns, mottling, or vein clearing.\n"
+        "2. 'Angular Leaf Spot': dark brown/black spots that are strictly ANGULAR (straight edges bounded by leaf veins), NOT perfectly round.\n"
+        "3. 'Blue Spot Fungus': fungal infection causing distinct blue or grey spots on the leaves.\n"
+        "4. 'Hornworms / Loopworms Tobacco Damage': large chewed holes in leaves, missing leaf margins, and visible caterpillars/worms or insect droppings.\n"
+        "5. 'Bacterial Leaf Drop': dark rotting spots leading to severe yellowing and leaves actively rotting/falling off.\n\n"
+        "Important constraints:\n"
+        "- 'Alternaria Alternata' (Brown Spot) has large, ROUND brown spots with concentric rings.\n"
+        "- 'Cercospora Nicotianae' (Frog Eye) has ROUND spots with light/white/gray centers and dark borders.\n"
+        "- If the spots are largely round, or have white centers, it is NOT Angular Leaf Spot.\n\n"
+        "Respond with JSON in this format:\n"
+        "{\n"
+        '  "reasoning": "brief explanation of the spot shapes, colors, and patterns seen",\n'
+        '  "override_disease": "Tobacco Mosaic Virus" | "Angular Leaf Spot" | "Blue Spot Fungus" | "Hornworms / Loopworms Tobacco Damage" | "Bacterial Leaf Drop" | "None"\n'
+        "}\n"
+        "If you see Brown Spot, Frog Eye, Healthy, or aren't absolutely sure it's one of the 5 diseases above, set override_disease to 'None'."
+    )
+    
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}",
+                                "detail": "low"
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens=150,
+            temperature=0.1,
+            response_format={"type": "json_object"},
+        )
+        content = response.choices[0].message.content or "{}"
+        result = json.loads(content)
+        
+        override = result.get("override_disease", "None")
+        valid_overrides = [
+            "Tobacco Mosaic Virus", "Angular Leaf Spot", 
+            "Blue Spot Fungus", "Hornworms / Loopworms Tobacco Damage", 
+            "Bacterial Leaf Drop"
+        ]
+        if override in valid_overrides:
+            return override
+            
+    except Exception as exc:
+        logger.warning("Vision fallback check failed: %s", exc)
+        
+    return None
 
 # ── Internal helper ─────────────────────────────────────────────────────
 

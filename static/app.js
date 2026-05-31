@@ -37,7 +37,28 @@ const I18N = {
     voiceNotSupported:   'Voice input is not supported in this browser.',
     guideTitle:          'Tobacco Disease Guide',
     guideSubtitle:       'Common diseases affecting tobacco crops, identification, and prevention strategies.',
-    weatherTitle:        'Market & Weather Updates'
+    weatherTitle:        'Market & Weather Updates',
+    guideBrownSpotTitle: 'Alternaria Alternata (Brown Spot)',
+    guideBrownSpotDesc:  'Brown spot appears as circular spots on the lower leaves, gradually moving upwards. It is favored by warm, humid conditions and can cause significant yield loss if not managed.',
+    guideMgmtTitle:      'Management',
+    guideBrownSpotTip1:  'Early reaping to remove infected lower leaves.',
+    guideBrownSpotTip2:  'Proper curing and avoiding excessive nitrogen fertilizer.',
+    guideBrownSpotTip3:  'Apply registered fungicides when symptoms first appear.',
+    guideFrogEyeTitle:   'Cercospora Nicotianae (Frog Eye Spot)',
+    guideFrogEyeDesc:    'Characterized by small, circular spots with white or light tan centers resembling frog eyes. It commonly occurs in wet weather and can lower leaf quality.',
+    guideFrogEyeTip1:    'Maintain strict seedbed hygiene.',
+    guideFrogEyeTip2:    'Destroy crop residues after harvest.',
+    guideFrogEyeTip3:    'Ensure proper plant spacing for air circulation.',
+    guideTMVTitle:       'Tobacco Mosaic Virus (TMV)',
+    guideTMVDesc:        'Causes mottling and discoloration of leaves (a mosaic pattern). It is highly contagious and usually spread through mechanical transmission (hands, tools).',
+    guideTMVTip1:        'Wash hands thoroughly with soap and water before handling plants.',
+    guideTMVTip2:        'Do not smoke or use tobacco products while in the field.',
+    guideTMVTip3:        'Use TMV-resistant tobacco varieties if available.',
+    guideAngularTitle:   'Angular Leaf Spot (Pseudomonas syringae)',
+    guideAngularDesc:    'A bacterial disease causing dark, angular spots on leaves, often surrounded by a yellow halo. Spread is favored by driving rain and wind.',
+    guideAngularTip1:    'Avoid working in the field when plants are wet.',
+    guideAngularTip2:    'Rotate crops and bury or burn infected stalks.',
+    guideAngularTip3:    'Apply copper-based bactericides preventatively in high-risk areas.'
   },
   sn: {
     homeWelcome:         'Titambirei kuAgriVision',
@@ -70,7 +91,28 @@ const I18N = {
     voiceNotSupported:   'Kupinda nenzwi hakutsigiwe mubrowser ino.',
     guideTitle:          'Nhungamiro yeZvirwere zveFodya',
     guideSubtitle:       'Zvirwere zvakajairika zvinokanganisa fodya.',
-    weatherTitle:        'Mamiriro Ekunze & Musika'
+    weatherTitle:        'Mamiriro Ekunze & Musika',
+    guideBrownSpotTitle: 'Alternaria Alternata (Zvirwere Zvemaziso eShava)',
+    guideBrownSpotDesc:  'Zvirwere zvemaziso eshava zvinoonekwa semavara akatenderera pamashizha epasi, zvichikwira kumusoro. Zvinofarirwa nemamiriro ekunze anodziya, ane hunyoro uye zvinogona kuderedza goho zvakanyanya kana zvikasagadziriswa.',
+    guideMgmtTitle:      'Kudzivirira nekurapa',
+    guideBrownSpotTip1:  'Kukohwa nekukurumidza kuti ubvise mashizha epasi ane chirwere.',
+    guideBrownSpotTip2:  'Kurapa zvakanaka uye kudzivisa fetireza yenitrogen yakawandisa.',
+    guideBrownSpotTip3:  'Shandisa mishonga inobvumirwa kana zviratidzo zvotanga kuonekwa.',
+    guideFrogEyeTitle:   'Cercospora Nicotianae (Ziso reDatya)',
+    guideFrogEyeDesc:    'Chinozivikanwa nemavara madiki akatenderera ane chena kana chiedza tan center akafanana nemeso edatya. Zvinowanzokanganisa munguva yekunaya kwemvura uye zvinogona kuderedza kunaka kwemashizha.',
+    guideFrogEyeTip1:    'Chengetedza hutsanana hwepamusoro pamibhedha yembeu.',
+    guideFrogEyeTip2:    'Kupisa zvisaririra zvezvirimwa mushure mekukohwa.',
+    guideFrogEyeTip3:    'Iva nechokwadi chekusiya nzvimbo yakakwana pakati pemiti kuti mhepo ifambe zvakanaka.',
+    guideTMVTitle:       'Hutachiwana hweFodya (TMV)',
+    guideTMVDesc:        'Inokonzera kushanduka kwemavara emashizha (chimiro che mosaic). Inotapukira zvikuru uye inowanzoparadzirwa kuburikidza nemaoko kana zvombo zvekushandisa.',
+    guideTMVTip1:        'Geza maoko ako zvakanaka nesipo nemvura usati wabata zvirimwa.',
+    guideTMVTip2:        'Usaputa kana kushandisa fodya paunenge uri mumunda.',
+    guideTMVTip3:        'Shandisa mhando dzefodya dzisingabatirwe neTMV kana dziripo.',
+    guideAngularTitle:   'Chirwere cheMashizha AneMakona (Angular Leaf Spot)',
+    guideAngularDesc:    'Chirwere chebhakitiriya chinokonzera mavara matema, ane makona pamashizha, anowanzotenderedzwa nehalo yellow. Kupararira kunofarirwa nemvura inonaya nemhepo.',
+    guideAngularTip1:    'Usashanda mumunda kana zvirimwa zvakanyorova.',
+    guideAngularTip2:    'Chinja zvirimwa zvaunodyara woviga kana kupisa madzinde ane chirwere.',
+    guideAngularTip3:    'Shandisa mishonga inobva pamhangura kuchengetedza munzvimbo dzine njodzi huru.'
   }
 };
 
@@ -167,6 +209,17 @@ document.addEventListener('DOMContentLoaded', () => {
   initAuth();
   fetchWeather();
   setMarketDate();
+
+  // Register Service Worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('[Service Worker] Registered with scope:', registration.scope);
+      })
+      .catch((error) => {
+        console.error('[Service Worker] Registration failed:', error);
+      });
+  }
 });
 
 // ═══════════════════════════════════════════
@@ -235,19 +288,35 @@ function showAuthError(msg, isSuccess = false) {
 // NAVIGATION
 // ═══════════════════════════════════════════
 function initNavigation() {
+  window.addEventListener('hashchange', handleHashChange);
+  
+  // Set initial state based on hash or default to home
+  handleHashChange();
+
   dom.navBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
+      e.preventDefault();
       const target = e.currentTarget.getAttribute('data-target');
-      navigateTo(target);
+      window.location.hash = target;
     });
   });
 
   dom.homeCards.forEach(card => {
     card.addEventListener('click', (e) => {
+      e.preventDefault();
       const target = e.currentTarget.getAttribute('data-target');
-      navigateTo(target);
+      window.location.hash = target;
     });
   });
+}
+
+function handleHashChange() {
+  let hash = window.location.hash.substring(1);
+  if (!hash || !document.getElementById(hash)) {
+    hash = 'page-home';
+    history.replaceState(null, null, '#' + hash);
+  }
+  navigateTo(hash);
 }
 
 function navigateTo(pageId) {
@@ -289,6 +358,30 @@ function applyLanguage(lang) {
     const key = el.dataset.i18nPlaceholder;
     if (I18N[lang][key]) el.placeholder = I18N[lang][key];
   });
+
+  // Toggle English / Shona blocks in results
+  if (dom.descEn && dom.descSn) {
+    const enBlock = dom.descEn.closest('.desc-block');
+    const snBlock = dom.descSn.closest('.desc-block');
+    const recHeadingSn = document.querySelector('.rec-heading-sn');
+    const recTitleEn = document.getElementById('rec-title');
+
+    if (lang === 'en') {
+      if (enBlock) enBlock.style.display = 'block';
+      if (snBlock) snBlock.style.display = 'none';
+      if (dom.recListEn) dom.recListEn.style.display = 'block';
+      if (dom.recListSn) dom.recListSn.style.display = 'none';
+      if (recHeadingSn) recHeadingSn.style.display = 'none';
+      if (recTitleEn) recTitleEn.style.display = 'block';
+    } else {
+      if (enBlock) enBlock.style.display = 'none';
+      if (snBlock) snBlock.style.display = 'block';
+      if (dom.recListEn) dom.recListEn.style.display = 'none';
+      if (dom.recListSn) dom.recListSn.style.display = 'block';
+      if (recHeadingSn) recHeadingSn.style.display = 'block';
+      if (recTitleEn) recTitleEn.style.display = 'none';
+    }
+  }
 }
 
 function bindLanguageToggle() {
@@ -394,7 +487,7 @@ function bindVoice() {
 function bindGlobalVoice() {
   dom.btnGlobalVoice.addEventListener('click', () => {
     // Navigate to diagnose -> describe tab, then start voice
-    navigateTo('page-diagnose');
+    window.location.hash = 'page-diagnose';
     switchTab('describe');
     if (!state.isRecording) {
       toggleVoice(true);
@@ -600,6 +693,13 @@ async function fetchWeather() {
       if(wc >= 51 && wc <= 67) desc = "Rainy";
       if(wc >= 71 && wc <= 77) desc = "Snow";
       $('#weather-desc').textContent = desc;
+
+      const homePill = $('#home-weather-pill');
+      if(homePill) {
+        homePill.classList.remove('hidden');
+        $('#home-weather-temp').textContent = `${data.current.temperature_2m}°C`;
+        $('#home-weather-desc').textContent = desc;
+      }
     }
   } catch (err) {
     console.error("Failed to fetch weather", err);

@@ -84,32 +84,14 @@ def predict(image_bytes: bytes) -> dict[str, Any]:
 
     # Decode & Enhance image ──────────────────────────────────────────────
     try:
+        from PIL import ImageOps
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        
-        # Apply CLAHE (Contrast Limited Adaptive Histogram Equalization)
-        import cv2
-        import numpy as np
-        
-        # Convert PIL Image to OpenCV format (RGB -> BGR)
-        cv_image = np.array(image)[:, :, ::-1].copy()
-        
-        # Convert to LAB color space for CLAHE
-        lab = cv2.cvtColor(cv_image, cv2.COLOR_BGR2LAB)
-        l, a, b = cv2.split(lab)
-        
-        # Apply CLAHE to L-channel (lightness)
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-        cl = clahe.apply(l)
-        
-        # Merge back and convert to RGB
-        limg = cv2.merge((cl, a, b))
-        enhanced_cv_img = cv2.cvtColor(limg, cv2.COLOR_LAB2RGB)
-        
-        # Convert back to PIL Image
-        image = Image.fromarray(enhanced_cv_img)
-        
+        # Apply Auto-orientation (EXIF-stripping)
+        image = ImageOps.exif_transpose(image)
+        # Apply Stretch resize to 640x640 exactly as done in training
+        image = image.resize((640, 640), Image.Resampling.BILINEAR)
     except Exception as exc:
-        raise ValueError(f"Unable to decode or enhance the uploaded image: {exc}") from exc
+        raise ValueError(f"Unable to decode the uploaded image: {exc}") from exc
 
     # Run inference ───────────────────────────────────────────────────────
     try:

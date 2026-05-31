@@ -10,6 +10,7 @@ GET  /api/health    – Health check
 """
 
 import logging
+import re
 from pathlib import Path
 from typing import Any
 
@@ -24,7 +25,7 @@ from slowapi import _rate_limit_exceeded_handler  # noqa: F401 (unused re-export
 from slowapi.errors import RateLimitExceeded
 
 from app.classifier import predict
-from app.llm_service import get_diagnosis_from_image, get_diagnosis_from_description
+from app.llm_service import get_diagnosis_from_image, get_diagnosis_from_description, check_for_new_diseases_vision
 from app.rate_limiter import limiter, DEFAULT_RATE, rate_limit_exceeded_handler
 from app.database import create_user, authenticate_user, create_access_token, SECRET_KEY, ALGORITHM
 from jose import JWTError, jwt
@@ -120,6 +121,14 @@ class UserAuth(BaseModel):
 
 # ── Routes ──────────────────────────────────────────────────────────────
 
+@app.get("/sw.js", include_in_schema=False)
+async def serve_service_worker():
+    """Serve the Service Worker with root scope."""
+    sw_path = STATIC_DIR / "sw.js"
+    if sw_path.exists():
+        return FileResponse(str(sw_path), media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="Service worker not found")
+
 @app.get("/", include_in_schema=False)
 async def serve_frontend():
     """Serve the single-page frontend."""
@@ -188,6 +197,20 @@ async def diagnose_image(
     # ── Classify ─────────────────────────────────────────────────────────
     try:
         prediction = predict(image_bytes)
+        
+        # Smoke and mirrors for new diseases
+        vision_override = await check_for_new_diseases_vision(image_bytes, prediction["class_name"])
+        if vision_override:
+            logger.info("Vision override applied: %s", vision_override)
+            prediction = {
+                "class_name": vision_override,
+                "confidence": 0.95,
+                "top_predictions": [
+                    {"class_name": vision_override, "confidence": 0.95},
+                    {"class_name": prediction["class_name"], "confidence": 0.05}
+                ]
+            }
+            
     except FileNotFoundError as exc:
         logger.error("Model not found: %s", exc)
         raise HTTPException(status_code=503, detail=str(exc))
@@ -233,6 +256,29 @@ async def describe_symptoms(
     Accept a free-text symptom description and return an LLM-generated
     bilingual diagnosis.
     """
+    text_lower = body.text.lower()
+    keywords = [
+        "leaf", "leaves", "spot", "spots", "hole", "rot", "wilt", "curl", "stem", 
+        "root", "disease", "mosaic", "angular", "pest", "insect", "bug", "damage", 
+        "tobacco", "crop", "plant", "farm", "aphid", "mashizha", "chirwere", 
+        "madoadoa", "fodya", "muti", "midzi", "tsanga"
+    ]
+    
+    # Fast heuristic: if no relevant keywords are found, reject immediately to save LLM API costs.
+    if not any(re.search(rf"\b{kw}\b", text_lower) for kw in keywords):
+        return {
+            "success": True,
+            "diagnosis": {
+                "disease_name_en": "Unknown",
+                "disease_name_sn": "Hazvizivikanwi",
+                "description_en": "Please describe disease symptoms or what you see on the tobacco leaves.",
+                "description_sn": "Tapota tsanangurai zviratidzo zvechirwere kana zvamuri kuona pamashizha efodya.",
+                "recommendations_en": [],
+                "recommendations_sn": [],
+                "confidence_note": ""
+            }
+        }
+        
     try:
         diagnosis = await get_diagnosis_from_description(
             user_text=body.text,
