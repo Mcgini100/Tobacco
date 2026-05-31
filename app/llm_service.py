@@ -241,6 +241,45 @@ async def check_for_new_diseases_vision(image_bytes: bytes, yolo_prediction: str
         
     return None
 
+async def transcribe_audio(audio_bytes: bytes, filename: str, language: str = "both") -> str:
+    """
+    Transcribe audio using OpenAI's Whisper API.
+    
+    Parameters
+    ----------
+    audio_bytes : bytes
+        The raw audio file bytes.
+    filename : str
+        The name of the file (e.g. 'audio.webm' or 'audio.wav').
+    language : str
+        'sn' for Shona, 'en' for English, or 'both'.
+    
+    Returns
+    -------
+    str : The transcribed text.
+    """
+    client = _get_client()
+    
+    # Whisper uses ISO-639-1 language codes. If 'sn', we pass it; otherwise we can omit or pass 'en'
+    # Shona is supported by Whisper as 'sn'.
+    kwargs = {
+        "model": "whisper-1",
+        "file": (filename, audio_bytes),
+    }
+    if language == "sn":
+        kwargs["language"] = "sn"
+    elif language == "en":
+        kwargs["language"] = "en"
+        
+    try:
+        # OpenAI audio API is synchronous or asynchronous depending on the client.
+        # Since _client is AsyncOpenAI, we use await client.audio.transcriptions.create
+        response = await client.audio.transcriptions.create(**kwargs)
+        return response.text
+    except Exception as exc:
+        logger.error("Audio transcription error: %s", exc)
+        raise exc
+
 # ── Internal helper ─────────────────────────────────────────────────────
 
 async def _call_llm(user_prompt: str) -> dict[str, Any]:

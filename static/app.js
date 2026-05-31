@@ -504,45 +504,39 @@ function toggleVoice(isGlobalTrigger = false) {
   }
 }
 
-function startVoice(isGlobalTrigger) {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return showError(t('voiceNotSupported'));
+async function startVoice(isGlobalTrigger) {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    return showError(t('voiceNotSupported'));
+  }
 
-  const recognition = new SR();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.lang = state.language === 'sn' ? 'sn-ZW' : 'en-US';
-
-  recognition.onstart = () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     state.isRecording = true;
     dom.btnVoice.classList.add('recording');
     dom.btnGlobalVoice.classList.add('recording');
     dom.voiceIndicator.classList.remove('hidden');
     dom.globalVoiceInd.classList.remove('hidden');
-  };
 
-  recognition.onresult = (e) => {
-    let transcript = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      transcript += e.results[i][0].transcript;
-    }
-    if (e.results[e.results.length - 1].isFinal) {
-      const cur = dom.symptomText.value;
-      dom.symptomText.value = (cur + (cur?' ':'') + transcript).slice(0, 500);
-      dom.charCounter.textContent = `${dom.symptomText.value.length} / 500`;
-      updateSubmitState();
-    }
-  };
+    state.audioChunks = [];
+    state.mediaRecorder = new MediaRecorder(stream);
+    
+    state.mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        state.audioChunks.push(e.data);
+      }
+    };
+    
+    state.mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach(track => track.stop());
+      const audioBlob = new Blob(state.audioChunks, { type: 'audio/webm' });
+      await sendAudioForTranscription(audioBlob);
+    };
 
-  recognition.onerror = () => stopVoice();
-  recognition.onend = () => stopVoice();
-
-  try {
-    state.isRecording = true;
-    recognition.start();
-    state.recognition = recognition;
+    state.mediaRecorder.start();
     setTimeout(() => { if(state.isRecording) stopVoice(); }, 30000);
-  } catch(err) {
+  } catch (err) {
+    console.error("Microphone access error:", err);
+    showError("Could not access microphone.");
     stopVoice();
   }
 }
@@ -553,9 +547,41 @@ function stopVoice() {
   dom.btnGlobalVoice.classList.remove('recording');
   dom.voiceIndicator.classList.add('hidden');
   dom.globalVoiceInd.classList.add('hidden');
-  if (state.recognition) {
-    try { state.recognition.stop(); } catch(e){}
-    state.recognition = null;
+  
+  if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
+    state.mediaRecorder.stop();
+  }
+}
+
+async function sendAudioForTranscription(blob) {
+  setProcessing(true);
+  try {
+    const token = localStorage.getItem('cg_token');
+    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    
+    const formData = new FormData();
+    formData.append('file', blob, 'audio.webm');
+    formData.append('language', state.language);
+
+    const res = await fetch('/api/transcribe', {
+      method: 'POST',
+      headers,
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || data.message || t('errorGeneric'));
+    if (!data.success) throw new Error(data.message || t('errorGeneric'));
+    
+    if (data.text) {
+      const cur = dom.symptomText.value;
+      dom.symptomText.value = (cur + (cur ? ' ' : '') + data.text).slice(0, 500);
+      dom.charCounter.textContent = `${dom.symptomText.value.length} / 500`;
+      updateSubmitState();
+    }
+  } catch (err) {
+    showError(err.message);
+  } finally {
+    setProcessing(false);
   }
 }
 

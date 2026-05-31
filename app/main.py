@@ -25,7 +25,7 @@ from slowapi import _rate_limit_exceeded_handler  # noqa: F401 (unused re-export
 from slowapi.errors import RateLimitExceeded
 
 from app.classifier import predict
-from app.llm_service import get_diagnosis_from_image, get_diagnosis_from_description, check_for_new_diseases_vision
+from app.llm_service import get_diagnosis_from_image, get_diagnosis_from_description, check_for_new_diseases_vision, transcribe_audio
 from app.rate_limiter import limiter, DEFAULT_RATE, rate_limit_exceeded_handler
 from app.database import create_user, authenticate_user, create_access_token, SECRET_KEY, ALGORITHM
 from jose import JWTError, jwt
@@ -295,6 +295,41 @@ async def describe_symptoms(
         "success": True,
         "diagnosis": diagnosis,
     }
+
+
+@app.post("/api/transcribe")
+@limiter.limit(DEFAULT_RATE)
+async def transcribe_voice(
+    request: Request,
+    file: UploadFile = File(..., description="Audio file to transcribe"),
+    current_user: str = Depends(get_current_user)
+) -> dict[str, Any]:
+    """
+    Accept an audio file from the frontend, pass it to OpenAI Whisper,
+    and return the transcribed text.
+    """
+    try:
+        audio_bytes = await file.read()
+        if len(audio_bytes) == 0:
+            raise HTTPException(status_code=400, detail="Uploaded audio file is empty.")
+        
+        # We need to extract a language hint from the request form or default to 'sn'
+        form_data = await request.form()
+        language = form_data.get("language", "sn")
+        
+        filename = file.filename or "audio.webm"
+        
+        transcript = await transcribe_audio(audio_bytes, filename, language)
+        return {
+            "success": True,
+            "text": transcript
+        }
+    except Exception as exc:
+        logger.error("Transcription endpoint error: %s", exc)
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to transcribe audio. Please try again."
+        )
 
 
 @app.get("/api/health")
