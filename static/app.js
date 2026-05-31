@@ -510,7 +510,7 @@ function startVoice(isGlobalTrigger) {
   const recognition = new SR();
   recognition.continuous = true;
   recognition.interimResults = true;
-  recognition.lang = 'en-US';
+  recognition.lang = state.language === 'sn' ? 'sn-ZW' : 'en-US';
 
   recognition.onstart = () => {
     state.isRecording = true;
@@ -652,9 +652,9 @@ function bindTTS() {
     if(!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
     
-    let text = `${dom.diseaseName.textContent}. ${dom.descEn.textContent}`;
+    let text = `${dom.diseaseName.textContent}. ${state.language === 'sn' ? dom.descSn.textContent : dom.descEn.textContent}`;
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
+    utterance.lang = state.language === 'sn' ? 'sn-ZW' : 'en-US';
     window.speechSynthesis.speak(utterance);
   });
 }
