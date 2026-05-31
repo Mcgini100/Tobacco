@@ -486,10 +486,11 @@ function bindVoice() {
 
 function bindGlobalVoice() {
   dom.btnGlobalVoice.addEventListener('click', () => {
-    // Navigate to diagnose -> describe tab, then start voice
-    window.location.hash = 'page-diagnose';
-    switchTab('describe');
-    if (!state.isRecording) {
+    if (state.isRecording) {
+      stopVoice();
+    } else {
+      window.location.hash = 'page-diagnose';
+      switchTab('describe');
       toggleVoice(true);
     }
   });
@@ -537,6 +538,7 @@ function startVoice(isGlobalTrigger) {
   recognition.onend = () => stopVoice();
 
   try {
+    state.isRecording = true;
     recognition.start();
     state.recognition = recognition;
     setTimeout(() => { if(state.isRecording) stopVoice(); }, 30000);
