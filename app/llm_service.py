@@ -15,6 +15,7 @@ import logging
 import os
 from typing import Any
 
+import httpx
 from openai import AsyncOpenAI, APIError, APIConnectionError, RateLimitError
 
 logger = logging.getLogger(__name__)
@@ -243,41 +244,69 @@ async def check_for_new_diseases_vision(image_bytes: bytes, yolo_prediction: str
 
 async def transcribe_audio(audio_bytes: bytes, filename: str, language: str = "both") -> str:
     """
-    Transcribe audio using OpenAI's Whisper API.
-    
-    Parameters
-    ----------
-    audio_bytes : bytes
-        The raw audio file bytes.
-    filename : str
-        The name of the file (e.g. 'audio.webm' or 'audio.wav').
-    language : str
-        'sn' for Shona, 'en' for English, or 'both'.
-    
-    Returns
-    -------
-    str : The transcribed text.
+    Transcribe audio. If Shona, uses Hugging Face's w2v-bert-2.0-shona-asr.
+    If English (or fallback), uses OpenAI's Whisper API.
     """
+    if language == "sn":
+        # Use Hugging Face Inference API for Shona
+        hf_token = os.getenv("HF_TOKEN")
+        headers = {}
+        if hf_token:
+            headers["Authorization"] = f"Bearer {hf_token}"
+            
+        api_url = "https://api-inference.huggingface.co/models/badrex/w2v-bert-2.0-shona-asr"
+        
+        try:
+            async with httpx.AsyncClient() as httpx_client:
+                response = await httpx_client.post(
+                    api_url, 
+                    headers=headers, 
+                    content=audio_bytes,
+                    timeout=60.0
+                )
+                response.raise_for_status()
+                data = response.json()
+                
+                # Hugging Face ASR returns {"text": "transcription"}
+                if isinstance(data, dict) and "text" in data:
+                    return data["text"]
+                elif isinstance(data, list) and len(data) > 0 and "text" in data[0]:
+                    return data[0]["text"]
+                elif "error" in data:
+                    if "is currently loading" in data.get("error", ""):
+                        raise RuntimeError("Shona AI model is waking up. Please wait 20 seconds and try again.")
+                    raise RuntimeError(f"Hugging Face API Error: {data['error']}")
+                else:
+                    logger.error("Unexpected HF response: %s", data)
+                    raise RuntimeError("Unexpected response from Shona ASR model.")
+        except httpx.HTTPStatusError as exc:
+            try:
+                err_msg = exc.response.json().get("error", str(exc))
+                if "is currently loading" in err_msg:
+                    raise RuntimeError("Shona AI model is waking up. Please wait 20 seconds and try again.")
+                logger.error("HF Inference API error: %s", err_msg)
+                raise RuntimeError(f"Hugging Face API Error: {err_msg}")
+            except Exception:
+                logger.error("HF Inference API HTTP error: %s", exc)
+                raise exc
+        except Exception as exc:
+            logger.error("Shona Audio transcription error: %s", exc)
+            raise exc
+
+    # Fallback to OpenAI Whisper for English (or if language is not "sn")
     client = _get_client()
-    
-    # Whisper uses ISO-639-1 language codes. If 'sn', we pass it; otherwise we can omit or pass 'en'
-    # Shona is supported by Whisper as 'sn'.
     kwargs = {
         "model": "whisper-1",
         "file": (filename, audio_bytes),
     }
-    if language == "sn":
-        kwargs["language"] = "sn"
-    elif language == "en":
+    if language == "en":
         kwargs["language"] = "en"
         
     try:
-        # OpenAI audio API is synchronous or asynchronous depending on the client.
-        # Since _client is AsyncOpenAI, we use await client.audio.transcriptions.create
         response = await client.audio.transcriptions.create(**kwargs)
         return response.text
     except Exception as exc:
-        logger.error("Audio transcription error: %s", exc)
+        logger.error("Audio transcription error (Whisper): %s", exc)
         raise exc
 
 # ── Internal helper ─────────────────────────────────────────────────────
