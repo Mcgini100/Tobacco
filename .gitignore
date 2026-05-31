@@ -25,7 +25,6 @@ env/
 
 # YOLO / Ultralytics
 runs/
-models/best.pt
 
 # Dataset
 datasets/
