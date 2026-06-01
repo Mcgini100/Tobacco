@@ -200,6 +200,14 @@ async def diagnose_image(
         
         # Smoke and mirrors for new diseases
         vision_override = await check_for_new_diseases_vision(image_bytes, prediction["class_name"])
+        
+        if vision_override == "Not a Plant":
+            logger.info("Vision check rejected the image: Not a Plant")
+            raise HTTPException(
+                status_code=400,
+                detail="The uploaded image does not appear to be a plant or tobacco leaf. Please upload a relevant photo."
+            )
+            
         if vision_override:
             logger.info("Vision override applied: %s", vision_override)
             prediction = {

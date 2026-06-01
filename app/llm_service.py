@@ -186,7 +186,9 @@ async def check_for_new_diseases_vision(image_bytes: bytes, yolo_prediction: str
         prompt = (
             "You are an expert tobacco plant pathologist. An initial classifier predicted this leaf as: "
             f"'{yolo_prediction}'.\n\n"
-            "Your task is to double-check if this image ACTUALLY shows clear signs of:\n"
+            "Your task is to double-check this image.\n\n"
+            "FIRST, verify if the image actually shows a plant, leaf, or agriculture-related subject. If it is clearly not a plant (e.g. an animal, person, screenshot, random object), you must return 'Not a Plant' for the override_disease.\n\n"
+            "SECOND, if it IS a plant, double-check if this image ACTUALLY shows clear signs of:\n"
             "1. 'Tobacco Mosaic Virus' (TMV): light/dark green mosaic patterns, mottling, or vein clearing.\n"
             "2. 'Angular Leaf Spot': dark brown/black spots that are strictly ANGULAR (straight edges bounded by leaf veins), NOT perfectly round.\n"
             "3. 'Blue Spot Fungus': fungal infection causing distinct blue or grey spots on the leaves.\n"
@@ -198,8 +200,8 @@ async def check_for_new_diseases_vision(image_bytes: bytes, yolo_prediction: str
             "- If the spots are largely round, or have white centers, it is NOT Angular Leaf Spot.\n\n"
             "Respond with JSON in this format:\n"
             "{\n"
-            '  "reasoning": "brief explanation of the spot shapes, colors, and patterns seen",\n'
-            '  "override_disease": "Tobacco Mosaic Virus" | "Angular Leaf Spot" | "Blue Spot Fungus" | "Hornworms / Loopworms Tobacco Damage" | "Bacterial Leaf Drop" | "None"\n'
+            '  "reasoning": "brief explanation of what is seen in the image",\n'
+            '  "override_disease": "Tobacco Mosaic Virus" | "Angular Leaf Spot" | "Blue Spot Fungus" | "Hornworms / Loopworms Tobacco Damage" | "Bacterial Leaf Drop" | "Not a Plant" | "None"\n'
             "}\n"
             "If you see Brown Spot, Frog Eye, Healthy, or aren't absolutely sure it's one of the 5 diseases above, set override_disease to 'None'."
         )
@@ -232,7 +234,7 @@ async def check_for_new_diseases_vision(image_bytes: bytes, yolo_prediction: str
         valid_overrides = [
             "Tobacco Mosaic Virus", "Angular Leaf Spot", 
             "Blue Spot Fungus", "Hornworms / Loopworms Tobacco Damage", 
-            "Bacterial Leaf Drop"
+            "Bacterial Leaf Drop", "Not a Plant"
         ]
         if override in valid_overrides:
             return override
