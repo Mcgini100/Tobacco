@@ -252,7 +252,9 @@ async def transcribe_audio(audio_bytes: bytes, filename: str, language: str = "b
     if language == "sn":
         # Use Hugging Face Inference API for Shona
         hf_token = os.getenv("HF_TOKEN")
-        headers = {}
+        headers = {
+            "Content-Type": "audio/x-audio"
+        }
         if hf_token:
             headers["Authorization"] = f"Bearer {hf_token}"
             
