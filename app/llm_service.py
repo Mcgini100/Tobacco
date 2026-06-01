@@ -179,31 +179,31 @@ async def check_for_new_diseases_vision(image_bytes: bytes, yolo_prediction: str
     Uses Chain-of-Thought reasoning to prevent false positives on Alternaria and Cercospora.
     Returns the class name if detected, else None.
     """
-    client = _get_client()
-    base64_image = base64.b64encode(image_bytes).decode('utf-8')
-    
-    prompt = (
-        "You are an expert tobacco plant pathologist. An initial classifier predicted this leaf as: "
-        f"'{yolo_prediction}'.\n\n"
-        "Your task is to double-check if this image ACTUALLY shows clear signs of:\n"
-        "1. 'Tobacco Mosaic Virus' (TMV): light/dark green mosaic patterns, mottling, or vein clearing.\n"
-        "2. 'Angular Leaf Spot': dark brown/black spots that are strictly ANGULAR (straight edges bounded by leaf veins), NOT perfectly round.\n"
-        "3. 'Blue Spot Fungus': fungal infection causing distinct blue or grey spots on the leaves.\n"
-        "4. 'Hornworms / Loopworms Tobacco Damage': large chewed holes in leaves, missing leaf margins, and visible caterpillars/worms or insect droppings.\n"
-        "5. 'Bacterial Leaf Drop': dark rotting spots leading to severe yellowing and leaves actively rotting/falling off.\n\n"
-        "Important constraints:\n"
-        "- 'Alternaria Alternata' (Brown Spot) has large, ROUND brown spots with concentric rings.\n"
-        "- 'Cercospora Nicotianae' (Frog Eye) has ROUND spots with light/white/gray centers and dark borders.\n"
-        "- If the spots are largely round, or have white centers, it is NOT Angular Leaf Spot.\n\n"
-        "Respond with JSON in this format:\n"
-        "{\n"
-        '  "reasoning": "brief explanation of the spot shapes, colors, and patterns seen",\n'
-        '  "override_disease": "Tobacco Mosaic Virus" | "Angular Leaf Spot" | "Blue Spot Fungus" | "Hornworms / Loopworms Tobacco Damage" | "Bacterial Leaf Drop" | "None"\n'
-        "}\n"
-        "If you see Brown Spot, Frog Eye, Healthy, or aren't absolutely sure it's one of the 5 diseases above, set override_disease to 'None'."
-    )
-    
     try:
+        client = _get_client()
+        base64_image = base64.b64encode(image_bytes).decode('utf-8')
+        
+        prompt = (
+            "You are an expert tobacco plant pathologist. An initial classifier predicted this leaf as: "
+            f"'{yolo_prediction}'.\n\n"
+            "Your task is to double-check if this image ACTUALLY shows clear signs of:\n"
+            "1. 'Tobacco Mosaic Virus' (TMV): light/dark green mosaic patterns, mottling, or vein clearing.\n"
+            "2. 'Angular Leaf Spot': dark brown/black spots that are strictly ANGULAR (straight edges bounded by leaf veins), NOT perfectly round.\n"
+            "3. 'Blue Spot Fungus': fungal infection causing distinct blue or grey spots on the leaves.\n"
+            "4. 'Hornworms / Loopworms Tobacco Damage': large chewed holes in leaves, missing leaf margins, and visible caterpillars/worms or insect droppings.\n"
+            "5. 'Bacterial Leaf Drop': dark rotting spots leading to severe yellowing and leaves actively rotting/falling off.\n\n"
+            "Important constraints:\n"
+            "- 'Alternaria Alternata' (Brown Spot) has large, ROUND brown spots with concentric rings.\n"
+            "- 'Cercospora Nicotianae' (Frog Eye) has ROUND spots with light/white/gray centers and dark borders.\n"
+            "- If the spots are largely round, or have white centers, it is NOT Angular Leaf Spot.\n\n"
+            "Respond with JSON in this format:\n"
+            "{\n"
+            '  "reasoning": "brief explanation of the spot shapes, colors, and patterns seen",\n'
+            '  "override_disease": "Tobacco Mosaic Virus" | "Angular Leaf Spot" | "Blue Spot Fungus" | "Hornworms / Loopworms Tobacco Damage" | "Bacterial Leaf Drop" | "None"\n'
+            "}\n"
+            "If you see Brown Spot, Frog Eye, Healthy, or aren't absolutely sure it's one of the 5 diseases above, set override_disease to 'None'."
+        )
+
         response = await client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -313,9 +313,8 @@ async def transcribe_audio(audio_bytes: bytes, filename: str, language: str = "b
 
 async def _call_llm(user_prompt: str) -> dict[str, Any]:
     """Send a chat completion request and parse the JSON response."""
-    client = _get_client()
-
     try:
+        client = _get_client()
         response = await client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
