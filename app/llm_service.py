@@ -256,7 +256,7 @@ async def transcribe_audio(audio_bytes: bytes, filename: str, language: str = "b
         if hf_token:
             headers["Authorization"] = f"Bearer {hf_token}"
             
-        api_url = "https://api-inference.huggingface.co/models/badrex/w2v-bert-2.0-shona-asr"
+        api_url = "https://router.huggingface.co/hf-inference/models/badrex/w2v-bert-2.0-shona-asr"
         
         try:
             import urllib.request
