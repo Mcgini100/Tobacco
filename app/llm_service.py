@@ -259,31 +259,33 @@ async def transcribe_audio(audio_bytes: bytes, filename: str, language: str = "b
         api_url = "https://api-inference.huggingface.co/models/badrex/w2v-bert-2.0-shona-asr"
         
         try:
-            async with httpx.AsyncClient() as httpx_client:
-                response = await httpx_client.post(
-                    api_url, 
-                    headers=headers, 
-                    content=audio_bytes,
-                    timeout=60.0
-                )
-                response.raise_for_status()
-                data = response.json()
+            import urllib.request
+            import urllib.error
+            import asyncio
+            
+            def _sync_post():
+                req = urllib.request.Request(api_url, data=audio_bytes, headers=headers, method="POST")
+                with urllib.request.urlopen(req, timeout=60.0) as response:
+                    return response.read(), response.status
+                    
+            resp_body, status_code = await asyncio.to_thread(_sync_post)
+            data = json.loads(resp_body.decode('utf-8'))
+            
+            if isinstance(data, dict) and "text" in data:
+                return data["text"]
+            elif isinstance(data, list) and len(data) > 0 and "text" in data[0]:
+                return data[0]["text"]
+            elif "error" in data:
+                if "is currently loading" in data.get("error", ""):
+                    raise RuntimeError("Shona AI model is waking up. Please wait 20 seconds and try again.")
+                raise RuntimeError(f"Hugging Face API Error: {data['error']}")
+            else:
+                logger.error("Unexpected HF response: %s", data)
+                raise RuntimeError("Unexpected response from Shona ASR model.")
                 
-                # Hugging Face ASR returns {"text": "transcription"}
-                if isinstance(data, dict) and "text" in data:
-                    return data["text"]
-                elif isinstance(data, list) and len(data) > 0 and "text" in data[0]:
-                    return data[0]["text"]
-                elif "error" in data:
-                    if "is currently loading" in data.get("error", ""):
-                        raise RuntimeError("Shona AI model is waking up. Please wait 20 seconds and try again.")
-                    raise RuntimeError(f"Hugging Face API Error: {data['error']}")
-                else:
-                    logger.error("Unexpected HF response: %s", data)
-                    raise RuntimeError("Unexpected response from Shona ASR model.")
-        except httpx.HTTPStatusError as exc:
+        except urllib.error.HTTPError as exc:
             try:
-                err_msg = exc.response.json().get("error", str(exc))
+                err_msg = json.loads(exc.read().decode('utf-8')).get("error", str(exc))
                 if "is currently loading" in err_msg:
                     raise RuntimeError("Shona AI model is waking up. Please wait 20 seconds and try again.")
                 logger.error("HF Inference API error: %s", err_msg)
