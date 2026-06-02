@@ -145,6 +145,9 @@ const dom = {
   globalVoiceInd:   $('#global-voice-indicator'),
   globalVoiceStatus:$('#global-voice-status'),
 
+  // Auth
+  btnLogout:        $('#btn-logout'),
+
   // Tabs (Diagnose)
   tabUpload:        $('#tab-upload'),
   tabDescribe:      $('#tab-describe'),
@@ -229,7 +232,24 @@ function initAuth() {
   const token = localStorage.getItem('cg_token');
   if (token) {
     $('#auth-modal').classList.add('hidden');
+    if (dom.btnLogout) dom.btnLogout.classList.remove('hidden');
   }
+
+  if (dom.btnLogout) {
+    dom.btnLogout.addEventListener('click', () => {
+      localStorage.removeItem('cg_token');
+      $('#auth-modal').classList.remove('hidden');
+      dom.btnLogout.classList.add('hidden');
+      $('#auth-username').value = '';
+      $('#auth-password').value = '';
+      $('#auth-error').classList.add('hidden');
+    });
+  }
+
+  $('#auth-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    $('#btn-login').click();
+  });
 
   $('#btn-login').addEventListener('click', async () => {
     const user = $('#auth-username').value;
@@ -247,10 +267,15 @@ function initAuth() {
         body: formData
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Login failed");
+      if (!res.ok) {
+        let errDetail = data.detail;
+        if (Array.isArray(errDetail)) errDetail = errDetail[0].msg;
+        throw new Error(errDetail || "Login failed");
+      }
       
       localStorage.setItem('cg_token', data.access_token);
       $('#auth-modal').classList.add('hidden');
+      if (dom.btnLogout) dom.btnLogout.classList.remove('hidden');
     } catch (err) {
       showAuthError(err.message);
     }
@@ -268,7 +293,11 @@ function initAuth() {
         body: JSON.stringify({ username: user, password: pass })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Registration failed");
+      if (!res.ok) {
+        let errDetail = data.detail;
+        if (Array.isArray(errDetail)) errDetail = errDetail[0].msg;
+        throw new Error(errDetail || "Registration failed");
+      }
       showAuthError("Registration successful. Please login.", true);
     } catch (err) {
       showAuthError(err.message);
@@ -433,7 +462,7 @@ function bindDropZone() {
 function bindFileInputs() {
   dom.fileInput.addEventListener('change', (e) => { if(e.target.files.length) handleFile(e.target.files[0]); });
   dom.cameraInput.addEventListener('change', (e) => { if(e.target.files.length) handleFile(e.target.files[0]); });
-  dom.btnCamera.addEventListener('click', () => dom.cameraInput.click());
+  dom.btnCamera.addEventListener('click', (e) => { e.stopPropagation(); dom.cameraInput.click(); });
 }
 
 function handleFile(file) {
