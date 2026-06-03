@@ -45,6 +45,8 @@ The project consists of three main parts:
 4. Set up your environment variables by editing `.env`:
    ```env
    OPENAI_API_KEY=your_openai_api_key_here
+   HF_ENDPOINT_URL=your_huggingface_endpoint_url_here
+   HF_TOKEN=your_huggingface_api_key_here
    ```
 
 ### 3. Running the App
