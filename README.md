@@ -1,4 +1,4 @@
-# ChiGwarada 🍃 - Tobacco Leaf Disease Detection
+#  Agrivision - Tobacco Leaf Disease Detection
 
 An AI-powered web application for detecting diseases on tobacco leaves. It provides a bilingual (Shona/English) interface for diagnosing diseases either through image upload or voice/text symptom descriptions. 
 
@@ -6,11 +6,11 @@ This is a university final year AI and Machine Learning project.
 
 ## Features
 
-- 📷 **Image Diagnosis**: Upload a picture of a tobacco leaf to get an instant diagnosis using a custom-trained YOLOv8 classification model.
-- 💬 **Symptom Description**: Type or speak (using the browser's free Web Speech API) the symptoms to get an AI-powered diagnosis.
-- 🌍 **Bilingual Interface**: Full support for English and Shona across the entire UI and AI-generated recommendations.
-- 🎨 **Premium UI**: Modern dark-themed glassmorphism interface built with vanilla HTML/CSS/JS for high performance.
-- 🛡️ **Anti-Abuse**: Built-in rate limiting and request tracking to protect the backend.
+- **Image Diagnosis**: Upload a picture of a tobacco leaf to get an instant diagnosis using a custom-trained YOLOv8 classification model.
+- **Symptom Description**: Type or speak (using the browser's free Web Speech API) the symptoms to get an AI-powered diagnosis.
+- **Bilingual Interface**: Full support for English and Shona across the entire UI and AI-generated recommendations.
+- **Premium UI**: Modern dark-themed glassmorphism interface built with vanilla HTML/CSS/JS for high performance.
+- **Anti-Abuse**: Built-in rate limiting and request tracking to protect the backend.
 
 ## Architecture
 
