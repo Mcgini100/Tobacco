@@ -1,0 +1,671 @@
+{
+  "split": "test",
+  "results": [
+    {
+      "weights": "models/best.pt",
+      "image_level": {
+        "n": 270,
+        "accuracy": 0.9963,
+        "macro_f1": 0.9944,
+        "per_class": {
+          "alternaria_alternata": {
+            "precision": 0.9859,
+            "recall": 1.0,
+            "f1": 0.9929,
+            "support": 70
+          },
+          "cercospora_nicotianae": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 148
+          },
+          "healthy": {
+            "precision": 1.0,
+            "recall": 0.9808,
+            "f1": 0.9903,
+            "support": 52
+          }
+        },
+        "confusion_matrix": [
+          [
+            70,
+            0,
+            0
+          ],
+          [
+            0,
+            148,
+            0
+          ],
+          [
+            1,
+            0,
+            51
+          ]
+        ]
+      },
+      "group_level": {
+        "n": 13,
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "per_class": {
+          "alternaria_alternata": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 3
+          },
+          "cercospora_nicotianae": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 4
+          },
+          "healthy": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 6
+          }
+        },
+        "confusion_matrix": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            4,
+            0
+          ],
+          [
+            0,
+            0,
+            6
+          ]
+        ]
+      },
+      "unseen_subset_image_level": {
+        "n": 40,
+        "accuracy": 0.975,
+        "macro_f1": 0.6473,
+        "per_class": {
+          "alternaria_alternata": {
+            "precision": 0.9231,
+            "recall": 1.0,
+            "f1": 0.96,
+            "support": 12
+          },
+          "cercospora_nicotianae": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 0
+          },
+          "healthy": {
+            "precision": 1.0,
+            "recall": 0.9643,
+            "f1": 0.9818,
+            "support": 28
+          }
+        },
+        "confusion_matrix": [
+          [
+            12,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            27
+          ]
+        ]
+      },
+      "unseen_subset_group_level": {
+        "n": 6,
+        "accuracy": 1.0,
+        "macro_f1": 0.6667,
+        "per_class": {
+          "alternaria_alternata": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 1
+          },
+          "cercospora_nicotianae": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 0
+          },
+          "healthy": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 5
+          }
+        },
+        "confusion_matrix": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            5
+          ]
+        ]
+      },
+      "misclassified": [
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/valid/healthy-33-_jpg.rf.3132ca3eeb7412bece08b65ca4f54cfc.jpg",
+          "true": "healthy",
+          "pred": "alternaria_alternata"
+        }
+      ]
+    },
+    {
+      "weights": "/tmp/claude-0/new_best.pt",
+      "image_level": {
+        "n": 270,
+        "accuracy": 0.7667,
+        "macro_f1": 0.7046,
+        "per_class": {
+          "alternaria_alternata": {
+            "precision": 0.7407,
+            "recall": 0.2857,
+            "f1": 0.4124,
+            "support": 70
+          },
+          "cercospora_nicotianae": {
+            "precision": 0.7684,
+            "recall": 0.9189,
+            "f1": 0.8369,
+            "support": 148
+          },
+          "healthy": {
+            "precision": 0.7727,
+            "recall": 0.9808,
+            "f1": 0.8644,
+            "support": 52
+          }
+        },
+        "confusion_matrix": [
+          [
+            20,
+            41,
+            9
+          ],
+          [
+            6,
+            136,
+            6
+          ],
+          [
+            1,
+            0,
+            51
+          ]
+        ]
+      },
+      "group_level": {
+        "n": 13,
+        "accuracy": 0.7692,
+        "macro_f1": 0.5758,
+        "per_class": {
+          "alternaria_alternata": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 3
+          },
+          "cercospora_nicotianae": {
+            "precision": 0.5714,
+            "recall": 1.0,
+            "f1": 0.7273,
+            "support": 4
+          },
+          "healthy": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 6
+          }
+        },
+        "confusion_matrix": [
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            0,
+            4,
+            0
+          ],
+          [
+            0,
+            0,
+            6
+          ]
+        ]
+      },
+      "unseen_subset_image_level": {
+        "n": 40,
+        "accuracy": 0.75,
+        "macro_f1": 0.4523,
+        "per_class": {
+          "alternaria_alternata": {
+            "precision": 0.75,
+            "recall": 0.25,
+            "f1": 0.375,
+            "support": 12
+          },
+          "cercospora_nicotianae": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 0
+          },
+          "healthy": {
+            "precision": 1.0,
+            "recall": 0.9643,
+            "f1": 0.9818,
+            "support": 28
+          }
+        },
+        "confusion_matrix": [
+          [
+            3,
+            9,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            27
+          ]
+        ]
+      },
+      "unseen_subset_group_level": {
+        "n": 6,
+        "accuracy": 0.8333,
+        "macro_f1": 0.3333,
+        "per_class": {
+          "alternaria_alternata": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 1
+          },
+          "cercospora_nicotianae": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "support": 0
+          },
+          "healthy": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 5
+          }
+        },
+        "confusion_matrix": [
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            5
+          ]
+        ]
+      },
+      "misclassified": [
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/test/image_processing20220902-2740614-mgc2j5_jpg.rf.3411e17a4ff6e7d790f4fc19f2656928.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/test/image_processing20220902-2740614-mgc2j5_jpg.rf.4cbaafb3fe7771d98693a4b5cf7264e4.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/test/image_processing20220902-2740614-mgc2j5_jpg.rf.692de6db75837f134174f84d6f6c431b.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/test/image_processing20220902-2740614-mgc2j5_jpg.rf.901ed6a2a9c574cb9a19c0844951339b.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/test/image_processing20220902-2740614-mgc2j5_jpg.rf.ab6554a37ba6ba045cd097eb24a10495.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/test/image_processing20220902-2740614-mgc2j5_jpg.rf.e4b3421388600b5f900da259cd57000d.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.2976d5f9c037fbc094fd22712e927204.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.3d47c06c710b4d0c09d5499b8b65e161.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.47ea9190200e8794698601a5126a6462.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.4dc099afdfbe7beee3ed51a8bcbe3df7.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.559613a0cdac9e6f0d2b60c7592bb9fc.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.7c8c5f1d795f61e923e3eacda56cca98.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.7da283a0e7192921163be8e4133888e3.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.849262fdafed05fc9fc9461fed8ea912.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.afb91a6fefdd2f2445dd222279190982.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.ba998ebb00a0b74dc063dc7d3aafbd2f.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.d4c4587df9785946d1b1847a4dd0d3be.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.dc4563d717170e96d7cb5d0aab54c0c3.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/1524158_jpg.rf.e6f7d04466a0e79bdaa0316ab0d94952.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/180614tc_jpg.rf.066ec5f31a0ec3a3ed8938d1b8e529cf.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "alternaria_alternata"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/180614tc_jpg.rf.729be8b0cb06e1dc21ede9ae124fbbe2.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "alternaria_alternata"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/180614tc_jpg.rf.a8ead9ff4fa92829d2414bafdbcd9892.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "alternaria_alternata"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/180614tc_jpg.rf.ae7d8eef6e65ef5dc6f40067b785e8c8.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "alternaria_alternata"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/180614tc_jpg.rf.dd561cf29fbf9c2a51cf92aa0bf85508.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "alternaria_alternata"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.0c33f600750aae774e1152d66d1c9ddc.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.1213f79353f7c69a366e609e17f7847c.jpg",
+          "true": "alternaria_alternata",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.16ef456acd691ab1a4587b8692796555.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.1c34f8e499bc555d2cfa325993c7102c.jpg",
+          "true": "alternaria_alternata",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.20f955f9764c69a458b5182d80d827fa.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.42310bb998213dc119674ac2635b3879.jpg",
+          "true": "alternaria_alternata",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.444325c2e8c592ca0fa3969bf7a99fce.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.4b030da78abd55167a7a6f4deb91d69f.jpg",
+          "true": "alternaria_alternata",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.577223c05f4e5d28605f421ff0c552e2.jpg",
+          "true": "alternaria_alternata",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.5df6298ad321d8846e7c29a3fe292c27.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.6468cecbd5e3dc32e738661cc20c933d.jpg",
+          "true": "alternaria_alternata",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.683d254c4ac757be27ab139a1f20094a.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.6da9dfb8ad2cef18863dca8f23969c76.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.74f4ddeaa4e83fff8429d7c5070bc72f.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.7fbcbe77b4e6fd41dbb16279aacfcdd8.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.a460e7c596e42dc64bd90f48cab6e0b9.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.a6d9f54770139a06757d8e91d6c14889.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.b5a782892fc512c48d838e4d516be9c3.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.b633ca5c4cce25e811872de42308d878.jpg",
+          "true": "alternaria_alternata",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.c29a1548409bb87149aeec581f6ba79a.jpg",
+          "true": "alternaria_alternata",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.d14fcf5a692cd09112af30bddd25f41c.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.d711f821a95e27cef753b8b70eb3e5e0.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Alternaria-Zimbabwe1_jpg.rf.f017f12c68395b8c9315b051853c2de0.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Zachariah-Hansen2_jpg.rf.63432a39a817ed425790102db5e137b7.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Zachariah-Hansen2_jpg.rf.73b86f7e8c8f48e82a9b6121515fd477.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Zachariah-Hansen2_jpg.rf.b38df5ce0e694829e560e854f067f9c0.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Zachariah-Hansen2_jpg.rf.bf286105ba100abd9951d1647844a6c0.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Zachariah-Hansen2_jpg.rf.d8f4e038365aeadc9f7bc45494fca219.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/Zachariah-Hansen2_jpg.rf.f4bd112a911405ae7f805283fcae4211.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/train/image_processing20220902-2740614-1xsizc_jpg.rf.8083bab1b0e94cfe3c78318016ceff3f.jpg",
+          "true": "cercospora_nicotianae",
+          "pred": "alternaria_alternata"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/valid/1524158_jpg.rf.0543e6aa2bf66c86d706d1724422cc94.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/valid/1524158_jpg.rf.88f0a05e601f9c9eb8fd16c16d3316d6.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/valid/Alternaria-Zimbabwe1_jpg.rf.4910cec40938135493ac60d01426d82c.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/valid/Alternaria-Zimbabwe1_jpg.rf.93161914f72ad4cb2cbb0d97f85644a4.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/valid/Alternaria-Zimbabwe1_jpg.rf.93e16e92290de07e328be1b46644f33b.jpg",
+          "true": "alternaria_alternata",
+          "pred": "healthy"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/valid/healthy-33-_jpg.rf.3132ca3eeb7412bece08b65ca4f54cfc.jpg",
+          "true": "healthy",
+          "pred": "alternaria_alternata"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/valid/image_processing20220902-2740614-mgc2j5_jpg.rf.372cac423c35fe20daffed305d3ef7da.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/valid/image_processing20220902-2740614-mgc2j5_jpg.rf.444817a4e8846a9789f52c813aadf368.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        },
+        {
+          "path": "Tobacco leaf disease detection.v1i.multiclass/valid/image_processing20220902-2740614-mgc2j5_jpg.rf.dde3589615d8654bc0b846679be4db8c.jpg",
+          "true": "alternaria_alternata",
+          "pred": "cercospora_nicotianae"
+        }
+      ]
+    }
+  ]
+}
