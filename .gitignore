@@ -40,3 +40,8 @@ Thumbs.db
 # Database
 *.db
 *.sqlite3
+
+# leak-free split build output and training runs
+dataset_clean/
+runs/
+yolov8n-cls.pt
