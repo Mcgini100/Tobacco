@@ -180,7 +180,7 @@
       ]
     },
     {
-      "weights": "/tmp/claude-0/new_best.pt",
+      "weights": "runs/classify/tobacco_cls_clean_split/weights/best.pt (retrained on clean split)",
       "image_level": {
         "n": 270,
         "accuracy": 0.7667,
